@@ -4,20 +4,67 @@ import {
   ValidationOptions,
 } from "class-validator";
 
-export function Compare(property: string, options?: ValidationOptions) {
+export enum CompareOptions {
+  Equals,
+  NotEquals,
+  GreaterThan,
+  GreaterThanOrEqual,
+  LessThan,
+  LessThanOrEqual,
+}
+
+function compareOptionsToString(compareOptions: CompareOptions): string {
+  switch (compareOptions) {
+    case CompareOptions.Equals:
+      return "equals";
+    case CompareOptions.NotEquals:
+      return "not equals";
+    case CompareOptions.GreaterThan:
+      return "greater than";
+    case CompareOptions.GreaterThanOrEqual:
+      return "greater than or equal";
+    case CompareOptions.LessThan:
+      return "less than";
+    case CompareOptions.LessThanOrEqual:
+      return "less than or equal";
+    default:
+      return "match";
+  }
+}
+
+export function Compare(
+  property: string,
+  compareOptions: CompareOptions,
+  options?: ValidationOptions
+) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: "compare",
       target: object.constructor,
       propertyName,
-      constraints: [property],
+      constraints: [property, compareOptions],
       options,
       validator: {
         validate(value: any, args: ValidationArguments): boolean {
-          return value === args.object[args.constraints[0]];
+          switch (args.constraints[1] as CompareOptions) {
+            case CompareOptions.Equals:
+              return value === args.object[args.constraints[0]];
+            case CompareOptions.NotEquals:
+              return value !== args.object[args.constraints[0]];
+            case CompareOptions.GreaterThan:
+              return value > args.object[args.constraints[0]];
+            case CompareOptions.GreaterThanOrEqual:
+              return value >= args.object[args.constraints[0]];
+            case CompareOptions.LessThan:
+              return value < args.object[args.constraints[0]];
+            case CompareOptions.LessThanOrEqual:
+              return value <= args.object[args.constraints[0]];
+          }
         },
         defaultMessage(args?: ValidationArguments): string {
-          return `${args.property} must be match with ${args.constraints[0]}`;
+          return `${args.property} must be ${compareOptionsToString(
+            args.constraints[1]
+          )} with ${args.constraints[0]}`;
         },
       },
     });
