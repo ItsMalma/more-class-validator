@@ -71,7 +71,7 @@ export function IsNull(options?: ValidationOptions) {
       options,
       validator: {
         validate(value: any, args: ValidationArguments): boolean {
-          return value !== undefined;
+          return value === null;
         },
         defaultMessage(args?: ValidationArguments): string {
           return `${args.property} must be null`;
@@ -90,7 +90,7 @@ export function IsUndefined(options?: ValidationOptions) {
       options,
       validator: {
         validate(value: any, args: ValidationArguments): boolean {
-          return value !== undefined;
+          return value === undefined;
         },
         defaultMessage(args?: ValidationArguments): string {
           return `${args.property} must be undefined`;
@@ -131,6 +131,9 @@ export function IsSlug(
                 (c >= "A" && c <= "Z")
             );
         },
+        defaultMessage(args?: ValidationArguments): string {
+          return `${args.property} must be slug`;
+        },
       },
     });
   };
@@ -163,6 +166,11 @@ export function IsNumberList(
                 ? !isNaN(Number(c))
                 : c >= "0" && c <= "9"
             );
+        },
+        defaultMessage(args?: ValidationArguments): string {
+          return `${args.property} must be list of number with ${
+            args.constraints[0].separator || ","
+          } as separator`;
         },
       },
     });

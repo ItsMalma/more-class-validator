@@ -33,6 +33,7 @@ yarn add class-validator more-class-validator
 - `IsNull`: determine whether property is a null.
 - `IsUndefined`: determine whether property is an undefined.
 - `IsSlug`: validate that a string property is in the correct format to be used as a URL slug, also takes an options object that allows you to specify the separator character to use.
+- `IsNumberList`: validate that a string property is a list of numbers with separated by a specified characacter in the options.
 
 ## Authors
 
